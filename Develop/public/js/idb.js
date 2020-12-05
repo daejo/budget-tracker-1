@@ -26,3 +26,35 @@ function saveRecord(record) {
     trackerStore.add(record);
 }
 
+function addRecord() {
+    const transaction = db.transaction(['new_transaction'], 'readwrite');
+    const trackerStore = transaction.objectStore('new_transaction');
+    const getAll = trackerStore.getAll();  
+
+    getAll.onsuccess = function() {
+        if (getAll.result.length > 0) {
+            fetch('/api/transaction/bulk', {
+                method: 'POST',
+                body: JSON.stringify(getAll.result),
+                headers: {
+                    Accept: "application/json, text/plain, */*",
+                    "Content-Type": "application/json"
+                }
+            })
+                .then(response => response.json())
+                .then(serverResponse => {
+                    if (serverResponse.message) {
+                        throw new Error(serverResponse);
+                    }
+                    const transaction = db.transaction(['new-transaction'], 'readwrite');
+                    const trackerStore = transaction.objectStore('new-transaction');
+                    trackerStore.clear();
+                })
+                .catch(err => {
+                    console.log(err);
+                });
+        }
+    };
+}
+
+window.addEventListener('online', addRecord);
