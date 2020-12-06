@@ -21,7 +21,7 @@ request.onerror = function(event) {
 
 function saveRecord(record) {
     const transaction = db.transaction(['new_transaction'], 'readwrite');
-    const trackerStore = transaction.objectStore('new-transaction');
+    const trackerStore = transaction.objectStore('new_transaction');
 
     trackerStore.add(record);
 }
@@ -33,7 +33,7 @@ function addRecord() {
 
     getAll.onsuccess = function() {
         if (getAll.result.length > 0) {
-            fetch('/api/transaction/bulk', {
+            fetch('/api/transaction', {
                 method: 'POST',
                 body: JSON.stringify(getAll.result),
                 headers: {
@@ -46,8 +46,8 @@ function addRecord() {
                     if (serverResponse.message) {
                         throw new Error(serverResponse);
                     }
-                    const transaction = db.transaction(['new-transaction'], 'readwrite');
-                    const trackerStore = transaction.objectStore('new-transaction');
+                    const transaction = db.transaction(['new_transaction'], 'readwrite');
+                    const trackerStore = transaction.objectStore('new_transaction');
                     trackerStore.clear();
                 })
                 .catch(err => {
